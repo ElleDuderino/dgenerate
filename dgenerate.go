@@ -121,9 +121,6 @@ func main() {
 	// Parse the arguments and initialize variables
 	initialize()
 
-	//	fmt.Println("Cardinality ", cardinality, "Nodeid = ", nodeid,
-	//		"schemFile = ", schemaFile, "nodes = ", nodes)
-
 	// Read the schema file and populate the column definitions
 	colDefs := processSchemaFile(schemaFile)
 
