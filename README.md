@@ -3,18 +3,18 @@ Parallel Data Generator for Distributed Databases
 
 ## Introduction
 
-There is often a need to generate large amounts of realistic data, in parallel, so that it can be ingested in a database
-for benchmarking or evaluation or testing of certain feature. In today's distributed world, most databases have the ability 
-ingest data in parallel from many chunks independently. dGenerate is a data generator which takes a schema description and 
+There is often a need to generate large amounts of realistic data, preferably in parallel, so that it can be ingested in a database
+for benchmarking or evaluation or testing of certain feature. In today's distributed world most databases have the ability 
+ingest data in parallel from many chunks independently. _dGenerate_ is a data generator which takes a schema description and 
 generates data files in parallel, and possibly data for different shards on different nodes so that it can be ingested locally.
 
 ## Description
 
 dGenerate generates data for each column of the schema in one or more physical data files. The files can be generated on
 one node or on multiple nodes by invoking an instance of this program on each node separately. This makes it very convenient 
-when ingesting into columnar distributed databases. You could just `paste` the files for pertinent columns with a delimiter
-right before ingesting data. This way you can generate the data upfront and for columns that are likely to be used but don't 
-have to be. That decision can be deferred until the actual ingestion and schema definition of the table to be populated 
+when ingesting into columnar distributed databases. You can just `paste` the files for pertinent columns with a delimiter
+right before ingesting data. This way you can generate the data upfront and for all columns that are likely to be used but don't 
+have to be. That decision can be deferred until actual ingestion and schema definition, of the table to be populated, 
 is decided.
 
 ## Input
@@ -114,25 +114,25 @@ type ZipfDist struct {
 dgenerate -card=1000 -nodes=3 -schemafile=sample_schema_file
 ```
 Assuming neither `MAXROWSPERFILE` nor `MAXGENERATORS` is set, default values (100, 1) will be assumed. 
-This will generate serially, 4 files per column (specified in the schema file `sample_schema_file`) per node. All files
+This will generate 4 files per column (specified in the schema file `sample_schema_file`) per node serially. All files
 will be generated in the directory from where the command was invoked. Each file will 
-will conatin 100 rows and each node will get 333 files. The four files designated for each of the 3 nodes 
+will conatin up to 100 rows and each node will get 333 files. The four files designated for each of the 3 nodes 
 will have 100, 100, 100 and 33 rows each.
 
 ### Example 2
 
 ```Shell
-EXPORT MAXROWSPERFILE=1000000
-EXPOERT MAXGENERATORS=64
+export MAXROWSPERFILE=1000000
+export MAXGENERATORS=64
 dgenerate -card=490000000 -nodes=7 -nodeid=4 -schemafile=sample_schema_file
 ```
-This will generate the share of data for the 5th (out of a total of 7 nodes) node. Total rows is 49 million. So, 
-the number of rows per column will be 70 million. Since `MAXROWSPERFILE=1000000`, there will be 70 files generated per 
-column (specified in the schema file `sample_schema_file`). Data will be generated 64 way parallel.
+This will generate the share of data for the 5th (out of a total of 7 nodes) node. Total rows are 490 million. So, 
+the number of rows per column per node (in this case Node04) will be 70 million. Since `MAXROWSPERFILE=1000000`, there will be 70 files generated per 
+column (specified in the schema file `sample_schema_file`). Data will be generated 64 way in parallel.
 
 
 ```
-Note: Since the data is generated independently for all columns  in parallel, dGenerate is not a 
+**Note**: Since the data is generated independently for all columns  in parallel, dGenerate is not a 
 good choice if you want corelation between columns.
 ```
 
